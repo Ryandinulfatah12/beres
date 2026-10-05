@@ -1,0 +1,22 @@
+{
+  "name": "beres-explainer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Video penjelasan 16:9 aplikasi Beres? dibuat dengan Remotion",
+  "scripts": {
+    "dev": "remotion studio",
+    "build": "remotion render BeresExplainer out/beres-explainer.mp4",
+    "still": "remotion still BeresExplainer out/frame.png"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.407",
+    "@remotion/google-fonts": "4.0.407",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.407"
+  },
+  "devDependencies": {
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
