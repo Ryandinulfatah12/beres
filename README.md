@@ -2,8 +2,8 @@
 
 > Dari menu sampai belanja, semua beres.
 
-[![Flutter](https://img.shields.io/badge/Flutter-3.24%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
-[![Dart](https://img.shields.io/badge/Dart-3.4%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
+[![Flutter](https://img.shields.io/badge/Flutter-3.27%2B-02569B?logo=flutter&logoColor=white)](https://flutter.dev)
+[![Dart](https://img.shields.io/badge/Dart-3.6%2B-0175C2?logo=dart&logoColor=white)](https://dart.dev)
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-lightgrey)](#menjalankan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
@@ -53,7 +53,7 @@ flutter pub get
 flutter run
 ```
 
-Butuh Flutter 3.24 atau lebih baru (Dart SDK `>=3.4.0 <4.0.0`); diuji dengan Flutter 3.32.6 di Android dan iOS.
+Butuh Flutter 3.27 atau lebih baru (Dart SDK `>=3.6.0 <4.0.0`); diuji dengan Flutter 3.32.6 di Android.
 
 Folder `android/` dan `ios/` sudah ikut di repo, jadi tidak perlu `flutter create` lagi. Nama aplikasi (`Beres?`) dan izin `INTERNET` — dipakai `google_fonts` untuk mengunduh Fredoka dan Plus Jakarta Sans sekali di awal lalu di-cache — sudah terpasang di `android/app/src/main/AndroidManifest.xml`.
 

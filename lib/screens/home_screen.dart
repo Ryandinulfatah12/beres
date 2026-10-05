@@ -304,16 +304,16 @@ class _TodayCard extends StatelessWidget {
                 const SizedBox(height: 12),
                 FilledButton(
                   onPressed: () => app.goToWeek(mondayOf(DateTime.now())),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [Text('Lihat minggu ini'), SizedBox(width: 4), Icon(Icons.chevron_right_rounded, size: 18)],
-                  ),
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: BC.daun,
                     minimumSize: const Size(0, 44),
                     padding: const EdgeInsets.symmetric(horizontal: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [Text('Lihat minggu ini'), SizedBox(width: 4), Icon(Icons.chevron_right_rounded, size: 18)],
                   ),
                 ),
               ],

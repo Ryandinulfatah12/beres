@@ -11,7 +11,7 @@ flutter pub get
 flutter run
 ```
 
-Butuh Flutter 3.24 atau lebih baru. Folder `android/` dan `ios/` sudah ikut di repo — jangan menjalankan `flutter create` di dalamnya, karena perintah itu menimpa `lib/main.dart`, `pubspec.yaml`, `analysis_options.yaml`, `test/widget_test.dart`, `README.md`, dan `.gitignore` dengan file bawaan.
+Butuh Flutter 3.27 atau lebih baru. Folder `android/` dan `ios/` sudah ikut di repo — jangan menjalankan `flutter create` di dalamnya, karena perintah itu menimpa `lib/main.dart`, `pubspec.yaml`, `analysis_options.yaml`, `test/widget_test.dart`, `README.md`, dan `.gitignore` dengan file bawaan.
 
 ## Sebelum membuka pull request
 

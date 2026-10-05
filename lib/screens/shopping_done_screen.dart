@@ -139,7 +139,7 @@ class _ConfettiPainter extends CustomPainter {
       final (x, delay, speed, rot) = _pieces[i];
       final p = (t * speed + delay) % 1.0;
       final opacity = p < 0.85 ? 1.0 : (1 - p) / 0.15;
-      final paint = Paint()..color = _colors[i % _colors.length].withOpacity(opacity.clamp(0.0, 1.0));
+      final paint = Paint()..color = _colors[i % _colors.length].withValues(alpha: opacity.clamp(0.0, 1.0));
       canvas.save();
       canvas.translate(x * size.width, p * size.height * 0.7 - 20);
       canvas.rotate(rot + p * 10);
