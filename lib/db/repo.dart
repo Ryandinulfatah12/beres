@@ -301,14 +301,24 @@ class Repo {
 
   Future<int> ensureWeek(DateTime monday, List<int> defaultDays) => _ensureWeekOn(db, monday, defaultDays);
 
+  /// Idempoten dan aman dipanggil berbarengan. Layar Minggu Ini dan Belanja
+  /// hidup bersamaan di IndexedStack, jadi keduanya bisa meminta minggu yang
+  /// sama persis pada saat yang sama; SELECT-lalu-INSERT biasa akan menabrak
+  /// UNIQUE week_start. INSERT OR IGNORE membuat pemanggil kedua ikut memakai
+  /// baris yang sudah dibuat pemanggil pertama.
   static Future<int> _ensureWeekOn(DatabaseExecutor db, DateTime monday, List<int> defaultDays) async {
     final key = isoDate(monday);
-    final rows = await db.query('week_plans', columns: ['id'], where: 'week_start = ?', whereArgs: [key]);
-    if (rows.isNotEmpty) return rows.first['id'] as int;
-    final id = await db.insert('week_plans', {'week_start': key, 'created_at': DateTime.now().toIso8601String()});
+    await db.rawInsert(
+        'INSERT OR IGNORE INTO week_plans (week_start, created_at) VALUES (?, ?)',
+        [key, DateTime.now().toIso8601String()]);
+    final rows =
+        await db.query('week_plans', columns: ['id'], where: 'week_start = ?', whereArgs: [key]);
+    final id = rows.first['id'] as int;
+    // plan_days punya UNIQUE (week_plan_id, day_of_week), jadi ini pun aman diulang.
     for (var d = 1; d <= 7; d++) {
-      await db.insert('plan_days',
-          {'week_plan_id': id, 'day_of_week': d, 'is_active': defaultDays.contains(d) ? 1 : 0});
+      await db.rawInsert(
+          'INSERT OR IGNORE INTO plan_days (week_plan_id, day_of_week, is_active) VALUES (?, ?, ?)',
+          [id, d, defaultDays.contains(d) ? 1 : 0]);
     }
     return id;
   }

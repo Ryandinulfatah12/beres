@@ -6,7 +6,11 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Belum dirilis]
 
+### Diperbaiki
+- **`UNIQUE constraint failed: week_plans.week_start` saat berpindah minggu.** `ensureWeek` melakukan SELECT lalu INSERT tanpa penjagaan, padahal layar Minggu Ini dan Belanja hidup bersamaan di `IndexedStack` dan memanggilnya berbarengan untuk minggu yang sama. Keduanya kini memakai `INSERT OR IGNORE`, jadi pemanggil kedua ikut memakai baris buatan yang pertama.
+
 ### Diubah
+- **Layar Riwayat didesain ulang.** Dari kartu-kartu melayang yang masing-masing membawa dua tombol besar, jadi daftar terkelompok per bulan: satu kartu per bulan berisi baris-baris minggu, total per bulan di header, seluruh baris diketuk untuk membuka, dan menyalin cukup satu ikon kecil. Nama lauk tampil sebagai chip (maksimal 3 + sisanya), bukan satu kalimat panjang dipisah koma.
 - **Eceran/grosir jadi cara beli per item, bukan jenis toko** (skema database v2). Sebelumnya `stores.type` memaksa satu toko hanya melayani salah satu, sehingga "beli telur grosir di pasar yang sama" mustahil dinyatakan tanpa membuat toko duplikat. Sekarang `shopping_items.buy_mode` diatur per baris lewat chip di daftar belanja, dan `ingredients.default_buy_mode` mengingatnya untuk generate berikutnya. Toko cukup punya nama.
 - Data awal: toko tinggal Super Indo dan Pasar; bahan yang biasanya dibeli banyak diberi cara beli grosir, bukan diarahkan ke "Toko Grosir".
 - Minimum Flutter naik dari 3.24 ke 3.27 (Dart 3.6) karena memakai `Color.withValues`.

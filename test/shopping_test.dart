@@ -41,6 +41,34 @@ void main() {
   Future<ShopItem> cari(String nama) async =>
       (await repo.listShopping(weekId)).firstWhere((i) => i.name == nama);
 
+  test('dua permintaan minggu yang sama secara bersamaan tidak bentrok', () async {
+    // Minggu Ini dan Belanja sama-sama hidup di IndexedStack dan memanggil
+    // weekId() berbarengan. Dulu ini menabrak UNIQUE week_plans.week_start.
+    final baru = DateTime(2031, 3, 3);
+    final hasil = await Future.wait([
+      repo.ensureWeek(baru, const [1, 2, 3]),
+      repo.ensureWeek(baru, const [1, 2, 3]),
+      repo.ensureWeek(baru, const [1, 2, 3]),
+    ]);
+
+    expect(hasil.toSet().length, 1, reason: 'ketiganya harus dapat minggu yang sama');
+
+    final minggu = await repo.getWeek(hasil.first);
+    expect(minggu.days.length, 7, reason: 'hari tidak boleh terduplikasi');
+    expect(minggu.days.where((d) => d.active).length, 3);
+  });
+
+  test('ensureWeek berulang tidak mengubah hari yang sudah diatur', () async {
+    final week = await repo.getWeek(weekId);
+    await repo.setDayActive(week.day(6).id, true);
+
+    await repo.ensureWeek(monday, const []);
+
+    final lagi = await repo.getWeek(weekId);
+    expect(lagi.day(6).active, isTrue, reason: 'pilihan hari pengguna tidak boleh ditimpa');
+    expect(lagi.days.length, 7);
+  });
+
   test('bahan yang sama dengan satuan sama dijumlahkan', () async {
     final sate = await buatMenu('Sate', [DishIngredient(name: 'Dada ayam', qty: 500, unit: 'gr')]);
     final capcay = await buatMenu('Capcay', [DishIngredient(name: 'Dada ayam', qty: 200, unit: 'gr')]);
