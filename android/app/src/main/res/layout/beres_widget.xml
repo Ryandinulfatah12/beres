@@ -85,11 +85,14 @@
         android:maxLines="1"
         android:ellipsize="end" />
 
-    <!-- Dorong baris bawah ke dasar widget saat tingginya dilebarkan. -->
-    <Space
+    <!-- Pendorong baris bawah ke dasar widget. Harus LinearLayout: RemoteViews
+         hanya mengizinkan sedikit jenis view, dan <Space> tidak termasuk —
+         memakainya membuat launcher gagal meng-inflate layout ini. -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:orientation="vertical" />
 
     <LinearLayout
         android:layout_width="match_parent"
