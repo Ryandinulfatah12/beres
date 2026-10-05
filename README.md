@@ -30,6 +30,7 @@ Semua data tersimpan di perangkat memakai SQLite. Tidak ada akun, tidak ada serv
   - [Menu](#menu)
   - [Riwayat](#riwayat)
   - [Pengaturan](#pengaturan)
+  - [Widget home screen](#widget-home-screen)
 - [Aturan generate daftar belanja](#aturan-generate-daftar-belanja)
 - [Model data](#model-data)
 - [Struktur proyek](#struktur-proyek)
@@ -218,6 +219,24 @@ Master menu yang dipakai berulang:
 - **Cadangkan data**: membagikan file `beres.db` apa adanya lewat share sheet — ke Drive, WhatsApp, atau penyimpanan lain.
 - **Bagikan daftar belanja**: teks daftar belanja minggu ini.
 
+### Widget home screen
+
+`lib/utils/widget_sync.dart`, `android/app/src/main/kotlin/com/ryan/beres/BeresWidgetProvider.kt`
+
+Pengingat masak tanpa perlu membuka aplikasi. Tahan layar home → **Widget** → cari **Beres?**, lalu tarik ke layar.
+
+Isinya:
+
+- rentang minggu berjalan,
+- **menu hari ini** — atau "Libur masak" / "Belum ada menu",
+- sampai tiga hari berikutnya yang sudah terisi, misal `Sel · Capcay, Rolade`,
+- ringkasan "5 hari masak · 9 lauk · 6 cemilan", berganti jadi ajakan "Minggu ini belum disusun — yuk isi menunya" kalau masih kosong,
+- chip belanja: "29 item belum dibeli", atau "Belanja sudah beres ✓".
+
+Diketuk untuk membuka aplikasi. Widget ikut diperbarui tiap kali data berubah — menambah menu, mencentang belanja — karena `AppState.changed()` mendorongnya tanpa ditunggu.
+
+Semua kalimat dirakit di sisi Dart; `RemoteViews` di Android hanya menempelkannya. Sengaja memakai `AppWidgetProvider` klasik, bukan Jetpack Glance, supaya proyek ini tidak ikut menyeret Jetpack Compose. Baris hari berikutnya disembunyikan kalau kosong, jadi ukuran kecil tidak menyisakan baris melompong.
+
 ---
 
 ## Aturan generate daftar belanja
@@ -357,7 +376,6 @@ Jujur soal apa yang belum ada:
 
 ## Berikutnya
 
-- Widget home screen (`home_widget` + Jetpack Glance): kecil 2×2 dan sedang 4×2 dulu.
 - Pengingat susun menu dan belanja (`flutter_local_notifications`).
 - Pulihkan dari file cadangan (`file_picker`).
 - Bundel font sebagai asset agar 100% offline sejak instalasi pertama.

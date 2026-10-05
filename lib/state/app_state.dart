@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 
 import '../db/repo.dart';
 import '../utils/format.dart';
+import '../utils/widget_sync.dart';
 
 /// State global ringan. Setiap perubahan data memanggil [changed] sehingga
 /// layar yang memakai DataBuilder memuat ulang datanya.
@@ -28,7 +31,13 @@ class AppState extends ChangeNotifier {
   void changed() {
     version++;
     notifyListeners();
+    // Widget home screen ikut diperbarui, tapi tidak ditunggu — kegagalannya
+    // tidak boleh menahan UI.
+    unawaited(WidgetSync.update(repo, defaultDays));
   }
+
+  /// Dipanggil sekali saat aplikasi dibuka.
+  Future<void> syncWidget() => WidgetSync.update(repo, defaultDays);
 
   void setTab(int i) {
     tab = i;

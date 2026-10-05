@@ -7,6 +7,7 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 ## [Belum dirilis]
 
 ### Ditambahkan
+- **Widget home screen** (Android): menu hari ini, sampai tiga hari berikutnya, ringkasan minggu, dan sisa item belanja — diketuk untuk membuka aplikasi, dan ikut diperbarui tiap kali data berubah. Memakai `AppWidgetProvider` + `RemoteViews` klasik, bukan Jetpack Glance, supaya tidak menyeret Jetpack Compose.
 - **Tarik ke bawah untuk menyegarkan**, dengan Si Beres sebagai indikatornya: pancinya mengintip naik dan miring mengikuti tarikan, uap "?" berubah jadi "✓" dan badannya menguning saat sudah cukup jauh, lalu uapnya jadi tanda putar sambil melompat-lompat selagi data dimuat ulang — "Tarik lagi ya…" → "Lepas, biar diaduk!" → "Sebentar, lagi diaduk…". Aktif di Beranda, Minggu Ini, Belanja, Menu, dan Riwayat. Dibangun di atas `CupertinoSliverRefreshControl` bawaan Flutter, tanpa menambah dependensi.
 
 ### Diperbaiki
@@ -22,7 +23,6 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 - Database v1 naik ke v2 otomatis: nilai `stores.type` lama diwarisi jadi cara beli tiap bahan dan item belanja, lalu tabel `stores` dibangun ulang tanpa kolom itu.
 
 ### Rencana
-- Widget home screen (`home_widget` + Jetpack Glance): ukuran 2×2 dan 4×2.
 - Pengingat susun menu dan belanja (`flutter_local_notifications`).
 - Pulihkan data dari file cadangan (`file_picker`).
 - Bundel font Fredoka dan Plus Jakarta Sans sebagai asset agar offline sejak instalasi pertama.

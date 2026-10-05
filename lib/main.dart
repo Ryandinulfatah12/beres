@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +15,7 @@ Future<void> main() async {
   final repo = await Repo.open();
   final app = AppState(repo);
   await app.load();
+  unawaited(app.syncWidget());
   runApp(ChangeNotifierProvider.value(value: app, child: const BeresApp()));
 }
 

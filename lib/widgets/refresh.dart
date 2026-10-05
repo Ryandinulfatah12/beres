@@ -86,10 +86,13 @@ Widget _indicator(
   // Saat ditarik pancinya miring sedikit, makin jauh makin tegak lagi.
   final miring = sibuk ? 0.0 : math.sin(p * math.pi) * 0.14;
 
+  // OverflowBox: di awal tarikan tinggi kotaknya masih beberapa piksel saja,
+  // sementara isinya ~86px. Tanpa ini Flutter mengeluh "bottom overflowed".
   return ClipRect(
-    child: Align(
+    child: OverflowBox(
       alignment: Alignment.bottomCenter,
-      heightFactor: 1,
+      minHeight: 0,
+      maxHeight: double.infinity,
       child: Opacity(
         opacity: p == 0 ? 0 : (p * 1.6).clamp(0.0, 1.0),
         child: Padding(
