@@ -22,6 +22,18 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^4.0.0
   sqflite_common_ffi: ^2.3.3
+  flutter_launcher_icons: ^0.14.1
 
 flutter:
   uses-material-design: true
+
+# Ikon aplikasi dibangkitkan dari assets/icon/, yang sendirinya di-render dari
+# maskot Si Beres lewat `flutter test tool/make_icon.dart`.
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/icon/beres_icon.png"
+  adaptive_icon_background: "#1F4D36"
+  adaptive_icon_foreground: "assets/icon/beres_icon_fg.png"
+  remove_alpha_ios: true
+  min_sdk_android: 21

@@ -7,6 +7,7 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 ## [Belum dirilis]
 
 ### Ditambahkan
+- **Ikon aplikasi Beres?**, menggantikan logo Flutter bawaan. Di-render dari widget `Mascot` yang sama dengan yang dipakai di dalam aplikasi, lalu disebar ke semua ukuran Android (termasuk adaptive icon) dan iOS.
 - **Widget home screen** (Android): menu hari ini, sampai tiga hari berikutnya, ringkasan minggu, dan sisa item belanja — diketuk untuk membuka aplikasi, dan ikut diperbarui tiap kali data berubah. Memakai `AppWidgetProvider` + `RemoteViews` klasik, bukan Jetpack Glance, supaya tidak menyeret Jetpack Compose.
 - **Tarik ke bawah untuk menyegarkan**, dengan Si Beres sebagai indikatornya: pancinya mengintip naik dan miring mengikuti tarikan, uap "?" berubah jadi "✓" dan badannya menguning saat sudah cukup jauh, lalu uapnya jadi tanda putar sambil melompat-lompat selagi data dimuat ulang — "Tarik lagi ya…" → "Lepas, biar diaduk!" → "Sebentar, lagi diaduk…". Aktif di Beranda, Minggu Ini, Belanja, Menu, dan Riwayat. Dibangun di atas `CupertinoSliverRefreshControl` bawaan Flutter, tanpa menambah dependensi.
 

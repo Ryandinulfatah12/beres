@@ -31,6 +31,7 @@ Semua data tersimpan di perangkat memakai SQLite. Tidak ada akun, tidak ada serv
   - [Riwayat](#riwayat)
   - [Pengaturan](#pengaturan)
   - [Widget home screen](#widget-home-screen)
+- [Ikon aplikasi](#ikon-aplikasi)
 - [Aturan generate daftar belanja](#aturan-generate-daftar-belanja)
 - [Model data](#model-data)
 - [Struktur proyek](#struktur-proyek)
@@ -321,6 +322,17 @@ Dua aturan yang menjaga kode tetap rapi:
 
 - **Semua SQL ada di `db/repo.dart`.** Tidak ada query yang ditulis dari dalam screen.
 - **Pemuatan data lewat `DataBuilder`.** Widget ini menyatakan apa yang dibutuhkannya dan memuat ulang otomatis tiap kali `AppState.version` berubah, jadi tidak perlu `setState` manual setelah mengubah data — cukup `app.changed()`.
+
+## Ikon aplikasi
+
+Ikonnya bukan aset tempelan — di-render dari maskot yang sama dengan yang dipakai di dalam aplikasi:
+
+```bash
+flutter test tool/make_icon.dart   # assets/icon/*.png dari widget Mascot
+dart run flutter_launcher_icons    # sebar ke semua ukuran Android + iOS
+```
+
+`tool/make_icon.dart` memotret widget `Mascot` ke PNG 1024×1024 lewat `RepaintBoundary`, lalu `flutter_launcher_icons` membangkitkan mipmap Android (termasuk adaptive icon berlatar `#1F4D36`) dan `AppIcon.appiconset` iOS. Mengubah maskotnya cukup jalankan ulang dua perintah itu.
 
 ## Desain dan maskot
 
