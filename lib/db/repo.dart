@@ -12,9 +12,14 @@ class Repo {
 
   static Future<Repo> open() async {
     final path = p.join(await getDatabasesPath(), 'beres.db');
-    final db = await openDatabase(
-      path,
-      version: 2,
+    return openAt(path);
+  }
+
+  /// Dipakai [open] dan oleh tes, yang menunjuk ke file sementara dan
+  /// memasang [factory] dari sqflite_common_ffi.
+  static Future<Repo> openAt(String path, {DatabaseFactory? factory}) async {
+    final options = OpenDatabaseOptions(
+      version: schemaVersion,
       onConfigure: (db) => db.execute('PRAGMA foreign_keys = ON'),
       onCreate: (db, version) async {
         for (final sql in _schema) {
@@ -24,8 +29,20 @@ class Repo {
       },
       onUpgrade: _upgrade,
     );
+    final db = factory == null
+        ? await openDatabase(
+            path,
+            version: options.version,
+            onConfigure: options.onConfigure,
+            onCreate: options.onCreate,
+            onUpgrade: options.onUpgrade,
+          )
+        : await factory.openDatabase(path, options: options);
     return Repo(db, path);
   }
+
+  /// Versi skema saat ini. Naikkan bersama penambahan langkah di [_upgrade].
+  static const schemaVersion = 2;
 
   static const _schema = [
     'CREATE TABLE settings (key TEXT PRIMARY KEY, value TEXT)',
