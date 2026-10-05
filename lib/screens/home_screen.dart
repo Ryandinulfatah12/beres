@@ -4,6 +4,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/refresh.dart';
 import '../widgets/mascot.dart';
 import 'dish_detail_screen.dart';
 import 'pick_dish_sheet.dart';
@@ -86,7 +87,7 @@ class _HomeBody extends StatelessWidget {
       bubble = 'Hari ini ${lauk.first.name.toLowerCase()}, semangat masaknya!';
     }
 
-    return ListView(
+    return BeresRefresh(
       padding: const EdgeInsets.only(bottom: 24),
       children: [
         Padding(

@@ -4,6 +4,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/refresh.dart';
 import '../widgets/mascot.dart';
 import 'dish_detail_screen.dart';
 
@@ -65,7 +66,7 @@ class _DishesScreenState extends State<DishesScreen> {
                           : 'Coba kata lain, atau buat menu baru.',
                     );
                   }
-                  return ListView(
+                  return BeresRefresh(
                     padding: const EdgeInsets.fromLTRB(16, 0, 16, 96),
                     children: [
                       ListCard(children: [

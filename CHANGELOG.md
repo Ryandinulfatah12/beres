@@ -6,6 +6,9 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Belum dirilis]
 
+### Ditambahkan
+- **Tarik ke bawah untuk menyegarkan**, dengan Si Beres sebagai indikatornya: pancinya mengintip naik dan miring mengikuti tarikan, uap "?" berubah jadi "✓" dan badannya menguning saat sudah cukup jauh, lalu uapnya jadi tanda putar sambil melompat-lompat selagi data dimuat ulang — "Tarik lagi ya…" → "Lepas, biar diaduk!" → "Sebentar, lagi diaduk…". Aktif di Beranda, Minggu Ini, Belanja, Menu, dan Riwayat. Dibangun di atas `CupertinoSliverRefreshControl` bawaan Flutter, tanpa menambah dependensi.
+
 ### Diperbaiki
 - **`UNIQUE constraint failed: week_plans.week_start` saat berpindah minggu.** `ensureWeek` melakukan SELECT lalu INSERT tanpa penjagaan, padahal layar Minggu Ini dan Belanja hidup bersamaan di `IndexedStack` dan memanggilnya berbarengan untuk minggu yang sama. Keduanya kini memakai `INSERT OR IGNORE`, jadi pemanggil kedua ikut memakai baris buatan yang pertama.
 

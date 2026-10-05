@@ -4,6 +4,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/refresh.dart';
 
 class _HistoryData {
   _HistoryData(this.weeks, this.month);
@@ -64,7 +65,7 @@ class HistoryScreen extends StatelessWidget {
     final thisMonday = mondayOf(DateTime.now());
     final months = _byMonth(d.weeks);
 
-    return ListView(
+    return BeresRefresh(
       padding: const EdgeInsets.only(bottom: 28),
       children: [
         const ScreenHeader(eyebrow: 'Minggu-minggu sebelumnya', title: 'Riwayat'),

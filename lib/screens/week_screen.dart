@@ -4,6 +4,7 @@ import '../models.dart';
 import '../theme.dart';
 import '../utils/format.dart';
 import '../widgets/common.dart';
+import '../widgets/refresh.dart';
 import '../widgets/mascot.dart';
 import 'pick_dish_sheet.dart';
 
@@ -61,7 +62,7 @@ class _WeekBody extends StatelessWidget {
           ),
         ),
         Expanded(
-          child: ListView(
+          child: BeresRefresh(
             padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
             children: [
               FadeIn(

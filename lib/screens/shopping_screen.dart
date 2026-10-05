@@ -6,6 +6,7 @@ import '../theme.dart';
 import '../utils/format.dart';
 import '../utils/share_text.dart';
 import '../widgets/common.dart';
+import '../widgets/refresh.dart';
 import 'shopping_mode_screen.dart';
 
 class _ShopData {
@@ -121,7 +122,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
           ),
         ),
         Expanded(
-          child: ListView(
+          child: BeresRefresh(
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
             children: [
               SectionLabel(
