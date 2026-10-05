@@ -1,38 +1,35 @@
 import React from 'react';
-import {AbsoluteFill, Composition} from 'remotion';
-import {Main, SCENE_COMPONENTS} from './Main';
-import {BC, BODY_FONT, FPS, HEIGHT, TIMELINE, TOTAL_FRAMES, WIDTH} from './theme';
+import {Composition} from 'remotion';
+import {Main, DEFAULT_PROPS} from './Main';
+import {FPS, LANDSCAPE, TOTAL_FRAMES, VERTICAL} from './theme';
 
+/**
+ * Dua komposisi dengan scene yang sama; tata letaknya menyesuaikan orientasi.
+ *
+ * Prop `audience` hanya memengaruhi bagian riwayat dan outro:
+ *   "pengguna"  (default) — tanpa jargon teknis.
+ *   "developer"           — menambah kartu Tanpa akun / Tanpa server / Data
+ *                           di perangkat, plus chip teknis.
+ */
 export const RemotionRoot: React.FC = () => (
   <>
     <Composition
-      id="BeresExplainer"
+      id="BeresLandscape"
       component={Main}
       durationInFrames={TOTAL_FRAMES}
       fps={FPS}
-      width={WIDTH}
-      height={HEIGHT}
+      width={LANDSCAPE.width}
+      height={LANDSCAPE.height}
+      defaultProps={DEFAULT_PROPS}
     />
-
-    {/* Tiap adegan juga jadi komposisi sendiri supaya bisa ditinjau terpisah. */}
-    {TIMELINE.map((scene) => {
-      const Scene = SCENE_COMPONENTS[scene.name];
-      const Solo: React.FC = () => (
-        <AbsoluteFill style={{background: BC.santan, fontFamily: BODY_FONT}}>
-          <Scene />
-        </AbsoluteFill>
-      );
-      return (
-        <Composition
-          key={scene.name}
-          id={`Scene-${scene.name}`}
-          component={Solo}
-          durationInFrames={scene.durationInFrames}
-          fps={FPS}
-          width={WIDTH}
-          height={HEIGHT}
-        />
-      );
-    })}
+    <Composition
+      id="BeresVertical"
+      component={Main}
+      durationInFrames={TOTAL_FRAMES}
+      fps={FPS}
+      width={VERTICAL.width}
+      height={VERTICAL.height}
+      defaultProps={DEFAULT_PROPS}
+    />
   </>
 );

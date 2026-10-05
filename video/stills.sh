@@ -1,18 +1,16 @@
 #!/bin/zsh
-# Render satu frame contoh dari tiap adegan untuk ditinjau cepat.
-# Pakai Chrome yang sudah terpasang: headless shell bawaan Remotion gagal diekstrak di mesin ini.
+# Render still di detik-detik kunci untuk ditinjau (quality check spec).
+#   zsh stills.sh              -> landscape
+#   zsh stills.sh BeresVertical -> vertical
 set -e
-CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
-render() {
-  npx remotion still "Scene-$1" "out/$1.png" --frame="$2" --browser-executable="$CHROME" --log=error
-}
-render title 60
-render problem 110
-render loop 110
-render week 150
-render generate 150
-render shopping 140
-render done 120
-render offline 110
-render outro 90
-echo "selesai"
+CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
+COMP="${1:-BeresLandscape}"
+FPS=60
+SECONDS_LIST=(3 8 12 20 30 40 47 53 58)
+mkdir -p out/still
+for sec in $SECONDS_LIST; do
+  frame=$(( sec * FPS ))
+  npx remotion still "$COMP" "out/still/${COMP}-${sec}s.png" \
+    --frame="$frame" --browser-executable="$CHROME" --log=error
+done
+echo "selesai -> out/still/"

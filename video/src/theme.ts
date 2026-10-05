@@ -1,3 +1,6 @@
+import {useVideoConfig} from 'remotion';
+import {s as toFrames} from './motion';
+
 /**
  * Palet dapur Beres? — disalin dari `lib/theme.dart` (class BC) supaya
  * videonya memakai warna yang sama persis dengan aplikasinya.
@@ -23,40 +26,65 @@ export const BC = {
   white: '#FFFFFF',
 } as const;
 
-/** Fredoka untuk judul, Plus Jakarta Sans untuk teks — seperti di aplikasi. */
 export const TITLE_FONT = '"Fredoka", "Plus Jakarta Sans", system-ui, sans-serif';
 export const BODY_FONT = '"Plus Jakarta Sans", system-ui, sans-serif';
 
-export const FPS = 30;
-export const WIDTH = 1920;
-export const HEIGHT = 1080;
+/** 60 fps supaya gerakannya halus. */
+export const FPS = 60;
+export const DURATION_SEC = 60;
 
-/** Durasi tiap adegan dalam detik, dipakai juga oleh Root untuk total frame. */
-export const SCENES = {
-  title: 7,
-  problem: 9,
-  loop: 10,
-  week: 12,
-  generate: 13,
-  shopping: 12,
-  done: 10,
-  offline: 9,
-  outro: 8,
+export const LANDSCAPE = {width: 1920, height: 1080} as const;
+export const VERTICAL = {width: 1080, height: 1920} as const;
+
+/**
+ * Storyboard dalam detik. Semua scene membaca mulai/selesainya dari sini,
+ * jadi menggeser satu scene tidak membuat yang lain meleset.
+ */
+export const SB = {
+  hook: {from: 0, to: 5},
+  logo: {from: 5, to: 9},
+  cycle: {from: 9, to: 14},
+  plan: {from: 14, to: 24},
+  merge: {from: 24, to: 34},
+  shop: {from: 34, to: 44},
+  done: {from: 44, to: 50},
+  history: {from: 50, to: 55},
+  outro: {from: 55, to: 60},
 } as const;
 
-export const sec = (s: number) => Math.round(s * FPS);
+export type SceneName = keyof typeof SB;
 
-export type SceneName = keyof typeof SCENES;
+/** Tiga babak: pembuka, babak phone (shared element), penutup. */
+export const ACT = {
+  /** Scene 1–3, dirangkai dengan transisi slide/wipe. */
+  intro: {from: SB.hook.from, to: SB.cycle.to},
+  /** Scene 4–8 — satu phone yang tidak pernah keluar layar. */
+  phone: {from: SB.plan.from, to: SB.history.to},
+  /** Scene 9. */
+  outro: {from: SB.outro.from, to: SB.outro.to},
+} as const;
 
-/** Urutan adegan dan frame mulainya. */
-export const TIMELINE: {name: SceneName; from: number; durationInFrames: number}[] = (() => {
-  let cursor = 0;
-  return (Object.keys(SCENES) as SceneName[]).map((name) => {
-    const durationInFrames = sec(SCENES[name]);
-    const from = cursor;
-    cursor += durationInFrames;
-    return {name, from, durationInFrames};
-  });
-})();
+/** Lama transisi antar scene di babak pembuka. */
+export const TRANSITION_SEC = 0.6;
 
-export const TOTAL_FRAMES = TIMELINE.reduce((n, s) => n + s.durationInFrames, 0);
+/** Helper detik → frame yang sudah tahu fps komposisi ini. */
+export const useS = () => {
+  const {fps} = useVideoConfig();
+  return (sec: number) => toFrames(sec, fps);
+};
+
+/** Orientasi komposisi — scene-nya sama, tata letaknya menyesuaikan. */
+export type Layout = 'landscape' | 'vertical';
+
+export const useLayout = (): Layout => {
+  const {width, height} = useVideoConfig();
+  return height > width ? 'vertical' : 'landscape';
+};
+
+/** Pilih nilai berdasarkan orientasi, supaya scene tidak penuh percabangan. */
+export const usePick = () => {
+  const layout = useLayout();
+  return <T,>(landscape: T, vertical: T): T => (layout === 'vertical' ? vertical : landscape);
+};
+
+export const TOTAL_FRAMES = Math.round(DURATION_SEC * FPS);
