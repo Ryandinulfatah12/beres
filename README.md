@@ -332,18 +332,25 @@ flutter analyze
 flutter test
 ```
 
+16 tes, dan yang menyentuh database berjalan di atas SQLite sungguhan lewat `sqflite_common_ffi` — bukan mock — jadi SQL agregasi dan langkah migrasinya ikut terbukti:
+
+| Berkas | Cakupan |
+| --- | --- |
+| `test/widget_test.dart` | util tanggal dan jumlah |
+| `test/migration_test.dart` | v1 → v2: data bertahan, tipe toko lama jadi cara beli, idempoten |
+| `test/shopping_test.dart` | penjumlahan bahan, hari non-aktif, item manual dan tercentang saat generate ulang |
+
 Yang perlu diketahui sebelum menyentuh kode:
 
 - Database dibuka sekali di `main()` sebelum `runApp`, jadi `Repo` selalu siap pakai dan tidak ada state "loading database" di dalam widget.
 - `AppState.weekId()` memakai minggu yang sedang dibuka; `thisWeekId()` selalu minggu kalender saat ini. Beranda dan Riwayat memakai yang kedua.
-- Skema masih `version: 1` dan belum punya langkah migrasi. Kalau kamu mengubah tabel, naikkan versinya dan tambahkan migrasi — lihat [CONTRIBUTING.md](CONTRIBUTING.md).
+- Skema ada di `Repo.schemaVersion` (sekarang `2`), migrasinya di `Repo._upgrade`. Kalau kamu mengubah tabel, naikkan versinya, tambahkan langkah migrasi, dan tulis tesnya di `test/migration_test.dart` — lihat [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Batasan saat ini
 
 Jujur soal apa yang belum ada:
 
 - **Belum ada pemulihan dari file cadangan.** Cadangkan sudah bisa (file `.db` dibagikan), tetapi mengembalikannya masih harus manual.
-- **Belum ada migrasi database.** Mengubah skema saat ini berarti data lama perlu penanganan tersendiri.
 - Font diunduh sekali saat pertama dijalankan, jadi tampilan pertama butuh internet sebelum ikut di-cache.
 - Satu profil per perangkat; belum ada sinkronisasi antar perangkat.
 - Rencana mingguan dipasang per hari, belum per waktu makan (sarapan/siang/malam).
