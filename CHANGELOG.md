@@ -6,6 +6,14 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Belum dirilis]
 
+### Diubah
+- **Eceran/grosir jadi cara beli per item, bukan jenis toko** (skema database v2). Sebelumnya `stores.type` memaksa satu toko hanya melayani salah satu, sehingga "beli telur grosir di pasar yang sama" mustahil dinyatakan tanpa membuat toko duplikat. Sekarang `shopping_items.buy_mode` diatur per baris lewat chip di daftar belanja, dan `ingredients.default_buy_mode` mengingatnya untuk generate berikutnya. Toko cukup punya nama.
+- Data awal: toko tinggal Super Indo dan Pasar; bahan yang biasanya dibeli banyak diberi cara beli grosir, bukan diarahkan ke "Toko Grosir".
+- Minimum Flutter naik dari 3.24 ke 3.27 (Dart 3.6) karena memakai `Color.withValues`.
+
+### Migrasi
+- Database v1 naik ke v2 otomatis: nilai `stores.type` lama diwarisi jadi cara beli tiap bahan dan item belanja, lalu tabel `stores` dibangun ulang tanpa kolom itu.
+
 ### Rencana
 - Widget home screen (`home_widget` + Jetpack Glance): ukuran 2×2 dan 4×2.
 - Pengingat susun menu dan belanja (`flutter_local_notifications`).

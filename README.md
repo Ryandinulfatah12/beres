@@ -7,7 +7,7 @@
 [![Platform](https://img.shields.io/badge/platform-Android%20%7C%20iOS-lightgrey)](#menjalankan)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-Aplikasi Flutter offline untuk menyusun menu lauk dan cemilan mingguan, membuat daftar belanja otomatis dari bahan menu (eceran/grosir), lalu checklist dan catat harga saat belanja.
+Aplikasi Flutter offline untuk menyusun menu lauk dan cemilan mingguan, membuat daftar belanja otomatis dari bahan menu, lalu checklist dan catat harga saat belanja.
 
 Semua data tersimpan di perangkat memakai SQLite. Tidak ada akun, tidak ada server, tidak ada data yang dikirim ke mana pun.
 
@@ -141,10 +141,11 @@ Beranda selalu membaca **minggu kalender saat ini** (`thisWeekId()`), berbeda da
 `lib/screens/shopping_screen.dart`
 
 - Dua kelompok: **Dari menu** (hasil generate) dan **Tambahan** (item manual seperti tisu atau sabun).
-- Pills filter dengan hitungan langsung: `Semua 24` · `Eceran 18` · `Grosir 6`.
-- Tiap baris menampilkan nama bahan, tag toko, dan **asal bahan** — nama menu yang memakainya (kolom `sources`), jadi jelas kenapa item itu ada di daftar.
+- Pills filter dengan hitungan langsung: `Semua 24` · `Eceran 18` · `Grosir 6` — menyaring berdasarkan **cara beli** tiap item, bukan berdasarkan toko.
+- Tiap baris menampilkan nama bahan, tag toko, chip cara beli, dan **asal bahan** — nama menu yang memakainya (kolom `sources`), jadi jelas kenapa item itu ada di daftar.
 - **Stepper jumlah** dengan langkah pintar: 50 untuk satuan `gr` dan `ml`, 1 untuk satuan lain. Menekan angkanya membuka dialog untuk mengisi jumlah dan satuan bebas.
 - Mengetuk tag toko membuka pemilih toko per item.
+- Mengetuk chip **Eceran/Grosir** membalik cara beli item itu. Pilihannya diingat sebagai default bahan tersebut, jadi generate minggu berikutnya tidak perlu diatur ulang. Karena cara beli melekat ke item dan bukan ke toko, satu toko bisa melayani keduanya — telur grosir dan cabai eceran di pasar yang sama.
 - **Geser ke kiri untuk hapus** (`Dismissible`); item hilang seketika tanpa menunggu database.
 - **Generate ulang** aman dipakai kapan saja — lihat [aturannya](#aturan-generate-daftar-belanja).
 - Ikon bagikan menyusun teks daftar belanja yang dikelompokkan per toko, siap dikirim ke WhatsApp:
@@ -152,12 +153,12 @@ Beranda selalu membaca **minggu kalender saat ini** (`thisWeekId()`), berbeda da
   ```
   Daftar belanja Beres? · 6 – 12 Okt 2026
 
-  *Super Indo (Eceran)*
+  *Super Indo*
   ☐ Dada ayam — 1000 gr
   ☑ Bawang merah — 11 siung
 
-  *Toko Grosir (Grosir)*
-  ☐ Telur — 13 butir
+  *Pasar*
+  ☐ Telur — 13 butir (grosir)
   ```
 
 - Daftar kosong menampilkan empty state dengan tombol **Generate dari menu**.
@@ -213,7 +214,7 @@ Master menu yang dipakai berulang:
 
 - **Profil**: ubah nama panggilan.
 - **Hari masak**: chip Sen–Min. Hanya berlaku untuk minggu baru; minggu yang sudah ada tidak berubah.
-- **Tempat belanja**: tambah, ubah, hapus toko, masing-masing bertipe **eceran** atau **grosir**. Tipe inilah yang menggerakkan filter dan pengelompokan di seluruh aplikasi.
+- **Tempat belanja**: tambah, ubah, hapus toko. Toko cukup punya nama — eceran/grosir bukan sifat toko, melainkan cara beli yang diatur per item di daftar belanja.
 - **Cadangkan data**: membagikan file `beres.db` apa adanya lewat share sheet — ke Drive, WhatsApp, atau penyimpanan lain.
 - **Bagikan daftar belanja**: teks daftar belanja minggu ini.
 
@@ -239,14 +240,16 @@ SQLite, delapan tabel, `PRAGMA foreign_keys = ON`:
 
 ```
 settings          key/value: name, default_days, onboarded
-stores            nama toko + type ('eceran' | 'grosir')
-ingredients       nama unik (NOCASE), satuan default, harga terakhir, toko default
+stores            nama toko saja
+ingredients       nama unik (NOCASE), satuan default, harga terakhir,
+                  toko default, cara beli default
 dishes            menu: nama, kategori ('lauk' | 'cemilan'), catatan
 dish_ingredients  dishes ✕ ingredients, dengan qty dan unit
 week_plans        satu baris per minggu (week_start unik), finished_at
 plan_days         7 baris per minggu, day_of_week 1–7, is_active
 plan_items        menu yang dipasang pada satu hari, dengan sort_order
-shopping_items    hasil generate + item manual: qty, unit, toko, harga, dicentang, sources
+shopping_items    hasil generate + item manual: qty, unit, toko, cara beli,
+                  harga, dicentang, sources
 ```
 
 Relasinya:
@@ -260,7 +263,7 @@ week_plans 1──n plan_days 1──n plan_items n──1 dishes n──n ingre
 
 Minggu diidentifikasi dari tanggal Senin-nya (`week_start`, format `yyyy-MM-dd`), dibuat sesuai kebutuhan oleh `ensureWeek` beserta tujuh `plan_days`-nya.
 
-Database baru langsung terisi data awal: tiga toko (Super Indo, Pasar, Toko Grosir), 13 menu beserta perkiraan bahannya, dan rencana Senin–Jumat minggu berjalan. Bahan yang biasanya dibeli grosir (telur, gula pasir, tepung tapioka, beras, minyak goreng) otomatis diarahkan ke toko grosir. Semuanya bisa diedit di halaman Menu dan Pengaturan.
+Database baru langsung terisi data awal: dua toko (Super Indo, Pasar), 13 menu beserta perkiraan bahannya, dan rencana Senin–Jumat minggu berjalan. Bahan yang biasanya dibeli sekalian banyak (telur, gula pasir, tepung tapioka, beras, minyak goreng) diberi cara beli **grosir** sejak awal. Semuanya bisa diedit di halaman Menu dan Pengaturan.
 
 ## Struktur proyek
 
