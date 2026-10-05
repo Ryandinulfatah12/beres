@@ -118,6 +118,21 @@ void main() {
     await repo.db.close();
   });
 
+  test('item tetap menunjuk ke tokonya setelah tabel stores dibangun ulang', () async {
+    await seedV1();
+    final repo = await Repo.openAt(path, factory: factory);
+
+    final items = await repo.listShopping(1);
+    expect(items.firstWhere((i) => i.name == 'Dada ayam').storeName, 'Super Indo');
+    expect(items.firstWhere((i) => i.name == 'Telur').storeName, 'Toko Grosir');
+
+    final ings = await repo.db.query('ingredients', orderBy: 'name');
+    expect(ings.every((i) => i['default_store_id'] != null), isTrue,
+        reason: 'toko default bahan tidak boleh ikut hilang');
+
+    await repo.db.close();
+  });
+
   test('tipe toko lama diwarisi jadi cara beli per item', () async {
     await seedV1();
     final repo = await Repo.openAt(path, factory: factory);

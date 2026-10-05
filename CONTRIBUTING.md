@@ -37,7 +37,18 @@ Skema ada di `lib/db/repo.dart`. Kalau kamu menambah atau mengubah tabel/kolom:
 
 1. Naikkan versi database.
 2. Tambahkan langkah migrasi untuk pengguna lama — jangan menghapus data mereka.
-3. Sebutkan perubahannya di deskripsi PR.
+3. Tulis tesnya di `test/migration_test.dart` — periksa juga **relasi antar tabel**, bukan cuma isi kolomnya.
+4. Sebutkan perubahannya di deskripsi PR.
+
+Untuk menguji migrasi di perangkat sungguhan, `tool/make_v1_db.dart` membuat file database skema lama berisi data contoh:
+
+```bash
+dart run tool/make_v1_db.dart /tmp/v1.db
+adb push /tmp/v1.db /data/local/tmp/
+adb shell "run-as com.ryan.beres cp /data/local/tmp/v1.db databases/beres.db"
+```
+
+Lalu buka aplikasinya. Satu jebakan yang sudah pernah menggigit: `sqflite` menjalankan `onUpgrade` di dalam transaksi, dan SQLite **mengabaikan tanpa error** `PRAGMA foreign_keys = OFF` di dalam transaksi — jadi `DROP TABLE` pada tabel induk tetap memicu `ON DELETE SET NULL` dan mengosongkan kolom relasi di tabel lain.
 
 ## Commit
 

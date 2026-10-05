@@ -100,15 +100,30 @@ class Repo {
       """);
 
       // SQLite lama tidak punya DROP COLUMN, jadi tabel stores dibangun ulang.
-      await db.execute('PRAGMA foreign_keys = OFF');
-      await db.transaction((txn) async {
-        await txn.execute(
-            'CREATE TABLE stores_new (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)');
-        await txn.execute('INSERT INTO stores_new (id, name) SELECT id, name FROM stores');
-        await txn.execute('DROP TABLE stores');
-        await txn.execute('ALTER TABLE stores_new RENAME TO stores');
-      });
-      await db.execute('PRAGMA foreign_keys = ON');
+      //
+      // Hati-hati: onUpgrade dijalankan sqflite di dalam transaksi, dan SQLite
+      // mengabaikan 'PRAGMA foreign_keys = OFF' di dalam transaksi. Jadi
+      // DROP TABLE stores tetap memicu ON DELETE SET NULL dan mengosongkan
+      // store_id di tabel lain. Nilainya disimpan dulu, lalu dipasang kembali.
+      await db.execute('CREATE TEMP TABLE _shop_store AS '
+          'SELECT id, store_id FROM shopping_items WHERE store_id IS NOT NULL');
+      await db.execute('CREATE TEMP TABLE _ing_store AS '
+          'SELECT id, default_store_id FROM ingredients WHERE default_store_id IS NOT NULL');
+
+      await db.execute(
+          'CREATE TABLE stores_new (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL)');
+      await db.execute('INSERT INTO stores_new (id, name) SELECT id, name FROM stores');
+      await db.execute('DROP TABLE stores');
+      await db.execute('ALTER TABLE stores_new RENAME TO stores');
+
+      await db.execute('UPDATE shopping_items SET store_id = '
+          '(SELECT store_id FROM _shop_store b WHERE b.id = shopping_items.id) '
+          'WHERE id IN (SELECT id FROM _shop_store)');
+      await db.execute('UPDATE ingredients SET default_store_id = '
+          '(SELECT default_store_id FROM _ing_store b WHERE b.id = ingredients.id) '
+          'WHERE id IN (SELECT id FROM _ing_store)');
+      await db.execute('DROP TABLE _shop_store');
+      await db.execute('DROP TABLE _ing_store');
     }
   }
 
