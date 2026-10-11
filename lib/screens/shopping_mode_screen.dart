@@ -208,21 +208,27 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
 
   Widget _tile(ShopItem i) {
     final done = _checked[i.id] ?? false;
-    final meta = [qtyText(i.qty, i.unit), if (i.storeName != null) i.storeName!].where((s) => s.isNotEmpty).join(', ');
+    // Nama toko hanya berguna saat semua toko ditampilkan bersama; begitu
+    // daftarnya sudah disaring ke satu toko, mengulangnya di tiap baris tidak
+    // menambah apa pun.
+    final meta = [
+      qtyText(i.qty, i.unit),
+      if (_store == null && i.storeName != null) i.storeName!,
+    ].where((s) => s.isNotEmpty).join(', ');
     return AnimatedContainer(
       key: ValueKey(i.id),
       duration: const Duration(milliseconds: 250),
       margin: const EdgeInsets.only(bottom: 8),
       decoration: BoxDecoration(
         color: done ? BC.lineSoft : Colors.white,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BR.innerR,
         border: Border.all(color: done ? BC.lineSoft : BC.line),
       ),
       child: Row(
         children: [
           Expanded(
             child: InkWell(
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BR.innerR,
               onTap: () => _toggle(i),
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(4, 6, 4, 6),
@@ -302,7 +308,7 @@ class _RiderBar extends StatelessWidget {
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(99),
+                      borderRadius: BR.pillR,
                     ),
                   ),
                 ),
@@ -312,7 +318,7 @@ class _RiderBar extends StatelessWidget {
                   bottom: 0,
                   width: c.maxWidth * v.clamp(0.0, 1.0),
                   child: Container(
-                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(99)),
+                    decoration: BoxDecoration(color: Colors.white, borderRadius: BR.pillR),
                   ),
                 ),
                 Positioned(

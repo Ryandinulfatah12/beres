@@ -123,7 +123,7 @@ class SquareIconButton extends StatelessWidget {
         foregroundColor: BC.arang,
         fixedSize: const Size(44, 44),
         side: const BorderSide(color: BC.line),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        shape: BR.pillShape,
       ),
     );
   }
@@ -167,9 +167,8 @@ class Tag extends StatelessWidget {
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(99)),
-      child: Text(text,
-          style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
+      decoration: BoxDecoration(color: bg, borderRadius: BR.pillR),
+      child: Text(text, style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: fg)),
     );
   }
 }
@@ -190,7 +189,7 @@ class BoxCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final r = BorderRadius.circular(16);
+    final r = BR.cardR;
     return Material(
       color: color,
       borderRadius: r,
@@ -218,7 +217,7 @@ class ListCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BR.cardR,
         border: Border.all(color: BC.line),
       ),
       child: Column(
@@ -244,7 +243,7 @@ class Pills extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(color: BC.pill, borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(color: BC.pill, borderRadius: BR.pillR),
       child: Row(
         children: [
           for (var i = 0; i < labels.length; i++)
@@ -255,7 +254,7 @@ class Pills extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   child: InkWell(
-                    borderRadius: BorderRadius.circular(9),
+                    borderRadius: BR.pillR,
                     onTap: () => onChanged(i),
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
@@ -263,7 +262,7 @@ class Pills extends StatelessWidget {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: i == index ? Colors.white : Colors.transparent,
-                        borderRadius: BorderRadius.circular(9),
+                        borderRadius: BR.pillR,
                         boxShadow: i == index
                             ? const [BoxShadow(color: Color(0x14000000), blurRadius: 2, offset: Offset(0, 1))]
                             : null,
@@ -314,6 +313,202 @@ class EmptyState extends StatelessWidget {
               FilledButton(onPressed: onAction, child: Text(actionLabel!)),
             ],
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// Ikon di dalam kotak membulat berwarna lembut — dipakai sebagai "aset" ikon
+/// di seluruh aplikasi supaya ikonografinya seragam dan lebih berkarakter
+/// daripada ikon telanjang.
+class SoftIcon extends StatelessWidget {
+  const SoftIcon(
+    this.icon, {
+    super.key,
+    this.bg = BC.greenSoft,
+    this.fg = BC.greenText,
+    this.size = 40,
+    this.radius = BR.pill,
+  });
+
+  final IconData icon;
+  final Color bg;
+  final Color fg;
+  final double size;
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(radius)),
+      child: Icon(icon, size: size * 0.52, color: fg),
+    );
+  }
+}
+
+/// Maskot di dalam lingkaran lembut — dipakai sebagai avatar di sapaan Beranda.
+class MascotAvatar extends StatelessWidget {
+  const MascotAvatar({super.key, this.size = 46});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      alignment: Alignment.center,
+      decoration: const BoxDecoration(color: BC.mint, shape: BoxShape.circle),
+      child: Mascot(size: size * 0.78, steam: Steam.none, eyes: Eyes.happy, motion: Motion.still),
+    );
+  }
+}
+
+/// Kartu statistik ringkas: label kecil, angka besar, keterangan, dan garis
+/// warna di bawahnya. Tiga buah berjajar muat di layar paling sempit.
+class StatTile extends StatelessWidget {
+  const StatTile({
+    super.key,
+    required this.label,
+    required this.value,
+    required this.sub,
+    required this.accent,
+    this.progress,
+    this.onTap,
+  });
+
+  final String label;
+  final String value;
+  final String sub;
+  final Color accent;
+
+  /// 0..1. Bila null kartunya memang tidak punya "sekian dari sekian", jadi
+  /// yang digambar hanya setrip aksen pendek — bukan bar penuh yang terbaca
+  /// seolah-olah sudah 100%.
+  final double? progress;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final r = BR.cardR;
+    return Material(
+      color: Colors.white,
+      borderRadius: r,
+      child: InkWell(
+        borderRadius: r,
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(11, 11, 11, 12),
+          decoration: BoxDecoration(borderRadius: r, border: Border.all(color: BC.line)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, color: BC.muted)),
+              const SizedBox(height: 6),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text(value, maxLines: 1, style: fredoka(19, weight: FontWeight.w600, color: BC.ink)),
+              ),
+              const SizedBox(height: 2),
+              Text(sub,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(fontSize: 11, color: BC.muted, fontWeight: FontWeight.w500)),
+              const SizedBox(height: 9),
+              if (progress == null)
+                Row(
+                  children: [
+                    Container(
+                      width: 26,
+                      height: 5,
+                      decoration: BoxDecoration(color: accent, borderRadius: BR.pillR),
+                    ),
+                    const SizedBox(width: 4),
+                    Expanded(
+                      child: Container(
+                        height: 5,
+                        decoration: BoxDecoration(color: BC.lineSoft, borderRadius: BR.pillR),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                TweenAnimationBuilder<double>(
+                  tween: Tween(begin: 0, end: progress!.clamp(0.0, 1.0)),
+                  duration: const Duration(milliseconds: 800),
+                  curve: Curves.easeOutCubic,
+                  builder: (_, v, __) => ClipRRect(
+                    borderRadius: BR.pillR,
+                    child: LinearProgressIndicator(
+                      value: v,
+                      minHeight: 5,
+                      color: accent,
+                      backgroundColor: BC.lineSoft,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Tombol teks berbentuk pil dengan ikon — aksi cepat yang ringan secara visual.
+class PillButton extends StatelessWidget {
+  const PillButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.onTap,
+    this.filled = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  /// Hijau pekat untuk aksi utama, putih bergaris untuk aksi pendukung.
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = filled ? Colors.white : BC.ink;
+    return Material(
+      color: filled ? BC.pandan : Colors.white,
+      borderRadius: BR.pillR,
+      child: InkWell(
+        borderRadius: BR.pillR,
+        onTap: onTap,
+        child: Container(
+          height: 46,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          decoration: BoxDecoration(
+            borderRadius: BR.pillR,
+            border: Border.all(color: filled ? BC.pandan : BC.line),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(icon, size: 18, color: fg),
+              const SizedBox(width: 7),
+              Flexible(
+                child: Text(label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: fg)),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -374,7 +569,8 @@ void showSnack(BuildContext context, String text) {
     ..showSnackBar(SnackBar(content: Text(text)));
 }
 
-Future<bool> confirm(BuildContext context, {required String title, required String message, String ok = 'Ya'}) async {
+Future<bool> confirm(BuildContext context,
+    {required String title, required String message, String ok = 'Ya'}) async {
   final r = await showDialog<bool>(
     context: context,
     builder: (c) => AlertDialog(

@@ -104,7 +104,7 @@ class _MonthHero extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 20),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: BC.daun, borderRadius: BorderRadius.circular(18)),
+      decoration: BoxDecoration(color: BC.daun, borderRadius: BR.cardR),
       child: Row(
         children: [
           Expanded(
@@ -298,7 +298,7 @@ class _MenuChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
       decoration: BoxDecoration(
         color: quiet ? Colors.transparent : BC.santan,
-        borderRadius: BorderRadius.circular(99),
+        borderRadius: BR.pillR,
         border: quiet ? Border.all(color: BC.line) : null,
       ),
       child: Text(text,
