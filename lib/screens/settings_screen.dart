@@ -190,7 +190,8 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 Wordmark(size: 22),
                 SizedBox(height: 2),
-                Text('versi 1.0.0', style: mutedText),
+                // Samakan dengan `version:` di pubspec.yaml setiap rilis.
+                Text('versi 1.1.0', style: mutedText),
               ],
             ),
           ),
