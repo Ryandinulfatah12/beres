@@ -11,7 +11,7 @@ Future<void> showPickDishSheet(BuildContext context, {required int dayId, requir
     isScrollControlled: true,
     showDragHandle: true,
     backgroundColor: Colors.white,
-    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(28))),
+    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(BR.card))),
     builder: (_) => _PickDishSheet(dayId: dayId, dayLabel: dayLabel),
   );
 }
@@ -119,7 +119,7 @@ class _PickDishSheetState extends State<_PickDishSheet> {
                       children: [
                         if (q.isNotEmpty && !exact)
                           ListTile(
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: BR.innerShape,
                             leading: const Icon(Icons.add_circle_outline_rounded, color: BC.pandan),
                             title: Text('Buat menu baru "${_query.trim()}"',
                                 style: const TextStyle(fontWeight: FontWeight.w700, color: BC.pandan)),
@@ -131,7 +131,7 @@ class _PickDishSheetState extends State<_PickDishSheet> {
                             value: _selected.contains(d.id),
                             onChanged: (v) => setState(() => v == true ? _selected.add(d.id) : _selected.remove(d.id)),
                             controlAffinity: ListTileControlAffinity.leading,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                            shape: BR.innerShape,
                             tileColor: _selected.contains(d.id) ? BC.greenSoft : null,
                             title: Text(d.name, style: const TextStyle(fontWeight: FontWeight.w600)),
                             subtitle: Text(

@@ -76,6 +76,26 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     );
   }
 
+  /// Mengelompokkan item per toko, supaya nama toko disebut sekali sebagai
+  /// judul grup dan tidak diulang sebagai chip di setiap baris — di daftar 28
+  /// item, chip "Super Indo" yang sama muncul 28 kali tanpa memberi informasi.
+  List<Widget> _byStore(List<ShopItem> list, _ShopData d) {
+    if (list.isEmpty) return const [];
+    final groups = <String, List<ShopItem>>{};
+    for (final i in list) {
+      groups.putIfAbsent(i.storeName ?? 'Belum ada toko', () => []).add(i);
+    }
+    final out = <Widget>[];
+    for (final g in groups.entries) {
+      if (out.isNotEmpty) out.add(const SizedBox(height: 10));
+      out.add(_StoreHeader(name: g.key, count: g.value.length));
+      out.add(ListCard(children: [
+        for (final i in g.value) _ShopRow(item: i, stores: d.stores, onDelete: () => _delete(i)),
+      ]));
+    }
+    return out;
+  }
+
   Widget _body(BuildContext context, _ShopData d) {
     final items = d.items.where((i) => !_hidden.contains(i.id)).toList();
     final header = ScreenHeader(
@@ -135,13 +155,12 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                   child: Text('Tidak ada bahan di pilihan ini.', style: TextStyle(color: BC.muted)),
                 )
               else
-                ListCard(children: [
-                  for (final i in fromMenu) _ShopRow(item: i, stores: d.stores, onDelete: () => _delete(i)),
-                ]),
+                ..._byStore(fromMenu, d),
               const SizedBox(height: 18),
               SectionLabel('Tambahan (${manual.length})'),
+              ..._byStore(manual, d),
+              if (manual.isNotEmpty) const SizedBox(height: 10),
               ListCard(children: [
-                for (final i in manual) _ShopRow(item: i, stores: d.stores, onDelete: () => _delete(i)),
                 Padding(
                   padding: const EdgeInsets.all(12),
                   child: Row(
@@ -165,7 +184,8 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
                 ),
               ]),
               const SizedBox(height: 8),
-              const Text('Geser item ke kiri untuk menghapus.', textAlign: TextAlign.center, style: mutedText),
+              const Text('Ketuk item untuk pindah toko · geser ke kiri untuk menghapus.',
+                  textAlign: TextAlign.center, style: mutedText),
             ],
           ),
         ),
@@ -179,6 +199,34 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Judul grup toko di daftar belanja.
+class _StoreHeader extends StatelessWidget {
+  const _StoreHeader({required this.name, required this.count});
+  final String name;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 0, 4, 6),
+      child: Row(
+        children: [
+          const Icon(Icons.storefront_rounded, size: 15, color: BC.pandan),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w800, color: BC.greenText)),
+          ),
+          const SizedBox(width: 6),
+          Text('$count item', style: mutedText),
+        ],
+      ),
     );
   }
 }
@@ -290,53 +338,55 @@ class _ShopRow extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          item.name,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w600,
-                            color: item.checked ? BC.muted : BC.arang,
-                            decoration: item.checked ? TextDecoration.lineThrough : null,
+              child: InkWell(
+                onTap: () => _pickStore(context),
+                borderRadius: BR.innerR,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            item.name,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: item.checked ? BC.muted : BC.arang,
+                              decoration: item.checked ? TextDecoration.lineThrough : null,
+                            ),
                           ),
                         ),
-                      ),
-                      if (item.checked) ...[
-                        const SizedBox(width: 4),
-                        const Icon(Icons.check_circle_rounded, size: 16, color: BC.pandan),
+                        if (item.checked) ...[
+                          const SizedBox(width: 4),
+                          const Icon(Icons.check_circle_rounded, size: 16, color: BC.pandan),
+                        ],
                       ],
-                    ],
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(99),
-                        onTap: () => _pickStore(context),
-                        child: Tag(item.storeName ?? 'Pilih toko', TagKind.toko),
-                      ),
-                      const SizedBox(width: 6),
-                      InkWell(
-                        borderRadius: BorderRadius.circular(99),
-                        onTap: () => _toggleBuyMode(context),
-                        child: Tag(item.grosir ? 'Grosir' : 'Eceran',
-                            item.grosir ? TagKind.grosir : TagKind.eceran),
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(child: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: mutedText)),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        InkWell(
+                          borderRadius: BR.pillR,
+                          onTap: () => _toggleBuyMode(context),
+                          child: Tag(item.grosir ? 'Grosir' : 'Eceran',
+                              item.grosir ? TagKind.grosir : TagKind.eceran),
+                        ),
+                        if (sub.isNotEmpty) ...[
+                          const SizedBox(width: 7),
+                          Flexible(
+                            child: Text(sub, maxLines: 1, overflow: TextOverflow.ellipsis, style: mutedText),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
             Container(
-              decoration: BoxDecoration(color: BC.santan, borderRadius: BorderRadius.circular(10)),
+              decoration: BoxDecoration(color: BC.santan, borderRadius: BR.pillR),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [

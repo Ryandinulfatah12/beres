@@ -56,7 +56,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
-                        borderRadius: BorderRadius.circular(18),
+                        borderRadius: BR.pillR,
                         border: Border.all(color: BC.line),
                       ),
                       child: const Text('Halo! Aku Si Beres',
@@ -142,15 +142,15 @@ class _DayToggle extends StatelessWidget {
       toggled: on,
       child: Material(
         color: on ? BC.greenSoft : Colors.white,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BR.pillR,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BR.pillR,
           onTap: onTap,
           child: Container(
             height: 46,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BR.pillR,
               border: Border.all(color: on ? BC.pandan : BC.line),
             ),
             child: Text(label,

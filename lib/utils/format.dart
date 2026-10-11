@@ -24,6 +24,19 @@ String weekRange(DateTime start) {
 final NumberFormat _rp = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 String rupiah(int? v) => _rp.format(v ?? 0);
 
+/// Rupiah ringkas untuk kartu statistik sempit: 1.250.000 -> "Rp 1,2jt".
+String rupiahShort(int? v) {
+  final n = v ?? 0;
+  String trim(double x) {
+    final s = x.toStringAsFixed(1);
+    return s.endsWith('.0') ? s.substring(0, s.length - 2) : s.replaceAll('.', ',');
+  }
+
+  if (n >= 1000000) return 'Rp ${trim(n / 1000000)}jt';
+  if (n >= 10000) return 'Rp ${n ~/ 1000}rb';
+  return rupiah(n);
+}
+
 String qtyText(double? q, String unit) {
   if (q == null) return unit;
   final n = q == q.roundToDouble() ? q.toInt().toString() : q.toStringAsFixed(1).replaceAll('.', ',');

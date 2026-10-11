@@ -20,7 +20,49 @@ class BC {
   static const steam = Color(0xFFA9C4B2);
   static const blush = Color(0xFFF2A27A);
   static const pill = Color(0xFFE4E9E2);
+
+  // --- Lapis baru: permukaan lembut, judul tebal, dan bilah bawah gelap. ---
+  static const mint = Color(0xFFEAF4EC);
+  static const mintLine = Color(0xFFD8E8DE);
+  static const kunyitSoft = Color(0xFFFCF2DA);
+  static const kunyitText = Color(0xFF8A6512);
+
+  /// Warna judul besar — sedikit lebih pekat dari [arang] supaya kontras.
+  static const ink = Color(0xFF14241A);
+
+  /// Gradasi kartu utama (kartu hijau di Beranda).
+  static const heroFrom = Color(0xFF2F7351);
+  static const heroTo = Color(0xFF1B4530);
 }
+
+/// Satu bahasa sudut untuk seluruh aplikasi, mengikuti bilah navigasi.
+///
+/// Apa pun yang diketuk sebagai kontrol berbentuk pil penuh; permukaan kartu
+/// memakai satu sudut besar yang sama; baris padat dan kotak isian memakai
+/// sudut sedang supaya isinya tidak tertabrak lengkungan.
+class BR {
+  static const pill = 99.0;
+  static const card = 28.0;
+  static const inner = 18.0;
+
+  static BorderRadius get pillR => BorderRadius.circular(pill);
+  static BorderRadius get cardR => BorderRadius.circular(card);
+  static BorderRadius get innerR => BorderRadius.circular(inner);
+
+  static RoundedRectangleBorder get pillShape => RoundedRectangleBorder(borderRadius: pillR);
+  static RoundedRectangleBorder get cardShape => RoundedRectangleBorder(borderRadius: cardR);
+  static RoundedRectangleBorder get innerShape => RoundedRectangleBorder(borderRadius: innerR);
+}
+
+/// Bayangan tipis untuk kartu yang perlu sedikit "terangkat".
+const softShadow = [
+  BoxShadow(color: Color(0x0D1B2A21), blurRadius: 18, offset: Offset(0, 8)),
+];
+
+/// Bayangan bilah navigasi melayang.
+const navShadow = [
+  BoxShadow(color: Color(0x261B2A21), blurRadius: 24, offset: Offset(0, 10)),
+];
 
 /// Huruf judul (Fredoka).
 TextStyle fredoka(double size, {FontWeight weight = FontWeight.w600, Color color = BC.arang}) =>
@@ -39,11 +81,11 @@ ThemeData buildTheme() {
     ),
     scaffoldBackgroundColor: BC.santan,
   );
-  final body = GoogleFonts.plusJakartaSansTextTheme(base.textTheme)
-      .apply(bodyColor: BC.arang, displayColor: BC.arang);
+  final body =
+      GoogleFonts.plusJakartaSansTextTheme(base.textTheme).apply(bodyColor: BC.arang, displayColor: BC.arang);
   final btnText = GoogleFonts.plusJakartaSans(fontWeight: FontWeight.w700, fontSize: 15);
   OutlineInputBorder border(Color c, [double w = 1]) => OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BR.innerR,
         borderSide: BorderSide(color: c, width: w),
       );
   return base.copyWith(
@@ -60,7 +102,7 @@ ThemeData buildTheme() {
         backgroundColor: BC.pandan,
         foregroundColor: Colors.white,
         minimumSize: const Size.fromHeight(52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: BR.pillShape,
         textStyle: btnText,
       ),
     ),
@@ -70,7 +112,7 @@ ThemeData buildTheme() {
         backgroundColor: Colors.white,
         minimumSize: const Size.fromHeight(52),
         side: const BorderSide(color: BC.line),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: BR.pillShape,
         textStyle: btnText,
       ),
     ),
@@ -96,13 +138,17 @@ ThemeData buildTheme() {
         GoogleFonts.plusJakartaSans(fontSize: 11, fontWeight: FontWeight.w600),
       ),
     ),
+    // FilterChip di Pengaturan ikut bentuk pil, bukan kotak bawaan Material.
+    chipTheme: const ChipThemeData(shape: StadiumBorder(side: BorderSide(color: BC.line))),
     checkboxTheme: CheckboxThemeData(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
     bottomSheetTheme: const BottomSheetThemeData(
       backgroundColor: Colors.white,
       surfaceTintColor: Colors.transparent,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(BR.card))),
     ),
+    dialogTheme: DialogThemeData(shape: BR.cardShape),
     snackBarTheme: const SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       backgroundColor: BC.daun,

@@ -28,6 +28,7 @@ class _DishesScreenState extends State<DishesScreen> {
             context, MaterialPageRoute(builder: (_) => DishDetailScreen(category: _cats[_cat]))),
         backgroundColor: BC.pandan,
         foregroundColor: Colors.white,
+        shape: BR.pillShape,
         icon: const Icon(Icons.add_rounded),
         label: const Text('Menu baru', style: TextStyle(fontWeight: FontWeight.w700)),
       ),

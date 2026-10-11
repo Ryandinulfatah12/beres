@@ -92,13 +92,13 @@ class SettingsScreen extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.fromLTRB(14, 14, 10, 14),
-            decoration: BoxDecoration(color: BC.pandan, borderRadius: BorderRadius.circular(20)),
+            decoration: BoxDecoration(color: BC.pandan, borderRadius: BR.cardR),
             child: Row(
               children: [
                 Container(
                   width: 60,
                   height: 60,
-                  decoration: BoxDecoration(color: BC.kunyit, borderRadius: BorderRadius.circular(18)),
+                  decoration: BoxDecoration(color: BC.kunyit, borderRadius: BR.pillR),
                   alignment: Alignment.center,
                   child: const Mascot(size: 54, steam: Steam.none, motion: Motion.still),
                 ),
@@ -185,7 +185,16 @@ class SettingsScreen extends StatelessWidget {
             ),
           ]),
           const SizedBox(height: 24),
-          const Center(child: Text('Beres? versi 1.0.0', style: mutedText)),
+          const Center(
+            child: Column(
+              children: [
+                Wordmark(size: 22),
+                SizedBox(height: 2),
+                // Samakan dengan `version:` di pubspec.yaml setiap rilis.
+                Text('versi 1.1.0', style: mutedText),
+              ],
+            ),
+          ),
         ],
       ),
     );

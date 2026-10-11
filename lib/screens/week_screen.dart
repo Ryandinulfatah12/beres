@@ -68,7 +68,7 @@ class _WeekBody extends StatelessWidget {
               FadeIn(
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(8, 8, 14, 8),
-                  decoration: BoxDecoration(color: BC.greenSoft, borderRadius: BorderRadius.circular(16)),
+                  decoration: BoxDecoration(color: BC.greenSoft, borderRadius: BR.pillR),
                   child: Row(
                     children: [
                       Mascot(
@@ -134,7 +134,7 @@ class _DayCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(14, 4, 4, 8),
       decoration: BoxDecoration(
         color: day.active ? Colors.white : Colors.transparent,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BR.cardR,
         border: Border.all(color: isToday ? BC.pandan : BC.line, width: isToday ? 1.5 : 1),
       ),
       child: Column(
@@ -216,7 +216,7 @@ class _ItemRow extends StatelessWidget {
                 for (final it in items)
                   Container(
                     padding: const EdgeInsets.only(left: 12),
-                    decoration: BoxDecoration(color: BC.santan, borderRadius: BorderRadius.circular(99)),
+                    decoration: BoxDecoration(color: BC.santan, borderRadius: BR.pillR),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
