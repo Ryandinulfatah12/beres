@@ -86,7 +86,8 @@ class _ShoppingModeScreenState extends State<ShoppingModeScreen> {
   @override
   Widget build(BuildContext context) {
     final done = _items.where((i) => _checked[i.id] ?? false).length;
-    final total = _items.fold<int>(0, (a, i) => a + ((_checked[i.id] ?? false) ? (_price[i.id] ?? 0) : 0));
+    // Harga langsung masuk total begitu diisi, tanpa harus dicentang dulu.
+    final total = _items.fold<int>(0, (a, i) => a + (_price[i.id] ?? 0));
     final progress = _items.isEmpty ? 0.0 : done / _items.length;
 
     final stores = <int, String>{};

@@ -227,8 +227,6 @@ class Repo {
 
   Future<void> deleteStore(int id) => db.delete('stores', where: 'id = ?', whereArgs: [id]);
 
-  Future<int?> defaultStore() => _defaultStore(db);
-
   // ---------------------------------------------------------------- dishes
 
   Future<List<Dish>> listDishes(String category) async {
@@ -402,19 +400,19 @@ class Repo {
       final plan = await getWeek(w['id'] as int);
       if (plan.laukCount + plan.cemilanCount == 0) continue;
       final t = await db.rawQuery(
-          'SELECT SUM(price) AS t FROM shopping_items WHERE week_plan_id = ? AND is_checked = 1', [plan.id]);
+          'SELECT SUM(price) AS t FROM shopping_items WHERE week_plan_id = ?', [plan.id]);
       out.add(WeekSummary(plan: plan, total: t.first['t'] as int?));
     }
     return out;
   }
 
-  /// Total belanja (item dicentang) untuk minggu-minggu yang dimulai di bulan [month].
+  /// Total belanja (semua item yang ada harganya) untuk minggu-minggu yang dimulai di bulan [month].
   Future<(int total, int weeks)> monthSpend(DateTime month) async {
     final key = isoDate(month).substring(0, 7);
     final r = await db.rawQuery('''
       SELECT COALESCE(SUM(s.price), 0) AS total, COUNT(DISTINCT w.id) AS weeks
       FROM shopping_items s JOIN week_plans w ON w.id = s.week_plan_id
-      WHERE s.is_checked = 1 AND s.price IS NOT NULL AND substr(w.week_start, 1, 7) = ?
+      WHERE s.price IS NOT NULL AND substr(w.week_start, 1, 7) = ?
     ''', [key]);
     return ((r.first['total'] as int?) ?? 0, (r.first['weeks'] as int?) ?? 0);
   }

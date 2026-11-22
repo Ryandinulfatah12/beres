@@ -51,7 +51,7 @@ class _ShoppingDoneScreenState extends State<ShoppingDoneScreen> with SingleTick
     final app = appOf(context);
     final bought = _items.where((i) => i.checked).toList();
     final byStore = <String, int>{};
-    for (final i in bought) {
+    for (final i in _items.where((i) => i.checked || i.price != null)) {
       final key = i.storeName ?? 'Lainnya';
       byStore[key] = (byStore[key] ?? 0) + (i.price ?? 0);
     }

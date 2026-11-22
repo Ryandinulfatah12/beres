@@ -26,14 +26,7 @@ class ShoppingScreen extends StatefulWidget {
 
 class _ShoppingScreenState extends State<ShoppingScreen> {
   int _filter = 0; // 0 semua, 1 eceran, 2 grosir
-  final _add = TextEditingController();
   final Set<int> _hidden = {};
-
-  @override
-  void dispose() {
-    _add.dispose();
-    super.dispose();
-  }
 
   Future<void> _generate(int weekId) async {
     final app = appOf(context);
@@ -44,14 +37,9 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         n > 0 ? '$n bahan sudah dijumlahkan.' : 'Menu minggu ini belum punya bahan. Lengkapi di halaman Menu.');
   }
 
-  Future<void> _addManual(_ShopData d) async {
-    final name = _add.text.trim();
-    if (name.isEmpty) return;
+  Future<void> _addManual(_ShopData d, int storeId, String name) async {
     final app = appOf(context);
-    final store = await app.repo.defaultStore();
-    await app.repo.addManual(d.weekId, name,
-        storeId: store, buyMode: _filter == 2 ? 'grosir' : 'eceran');
-    _add.clear();
+    await app.repo.addManual(d.weekId, name, storeId: storeId, buyMode: _filter == 2 ? 'grosir' : 'eceran');
     app.changed();
   }
 
@@ -79,20 +67,25 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
   /// Mengelompokkan item per toko, supaya nama toko disebut sekali sebagai
   /// judul grup dan tidak diulang sebagai chip di setiap baris — di daftar 28
   /// item, chip "Super Indo" yang sama muncul 28 kali tanpa memberi informasi.
+  /// Setiap toko selalu tampil (walau kosong) dengan baris tambah item sendiri,
+  /// jadi item tambahan langsung masuk ke toko tempat ia akan dibeli.
   List<Widget> _byStore(List<ShopItem> list, _ShopData d) {
-    if (list.isEmpty) return const [];
-    final groups = <String, List<ShopItem>>{};
-    for (final i in list) {
-      groups.putIfAbsent(i.storeName ?? 'Belum ada toko', () => []).add(i);
-    }
+    final known = {for (final s in d.stores) s.id};
     final out = <Widget>[];
-    for (final g in groups.entries) {
+    void group(String name, List<ShopItem> items, {int? storeId}) {
       if (out.isNotEmpty) out.add(const SizedBox(height: 10));
-      out.add(_StoreHeader(name: g.key, count: g.value.length));
+      out.add(_StoreHeader(name: name, count: items.length));
       out.add(ListCard(children: [
-        for (final i in g.value) _ShopRow(item: i, stores: d.stores, onDelete: () => _delete(i)),
+        for (final i in items) _ShopRow(item: i, stores: d.stores, onDelete: () => _delete(i)),
+        if (storeId != null) _AddRow(key: ValueKey('add-$storeId'), onAdd: (name) => _addManual(d, storeId, name)),
       ]));
     }
+
+    for (final s in d.stores) {
+      group(s.name, list.where((i) => i.storeId == s.id).toList(), storeId: s.id);
+    }
+    final loose = list.where((i) => !known.contains(i.storeId)).toList();
+    if (loose.isNotEmpty) group('Belum ada toko', loose);
     return out;
   }
 
@@ -126,8 +119,7 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
     }
 
     bool match(ShopItem i) => _filter == 0 || (_filter == 2 ? i.grosir : !i.grosir);
-    final fromMenu = items.where((i) => !i.manual && match(i)).toList();
-    final manual = items.where((i) => i.manual && match(i)).toList();
+    final visible = items.where(match).toList();
     final grosirCount = items.where((i) => i.grosir).length;
 
     return Column(
@@ -146,43 +138,10 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
             padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
             children: [
               SectionLabel(
-                'Dari menu (${fromMenu.length})',
+                'Per toko (${visible.length})',
                 trailing: TextButton(onPressed: () => _generate(d.weekId), child: const Text('Generate ulang')),
               ),
-              if (fromMenu.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(4, 0, 4, 8),
-                  child: Text('Tidak ada bahan di pilihan ini.', style: TextStyle(color: BC.muted)),
-                )
-              else
-                ..._byStore(fromMenu, d),
-              const SizedBox(height: 18),
-              SectionLabel('Tambahan (${manual.length})'),
-              ..._byStore(manual, d),
-              if (manual.isNotEmpty) const SizedBox(height: 10),
-              ListCard(children: [
-                Padding(
-                  padding: const EdgeInsets.all(12),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          controller: _add,
-                          textCapitalization: TextCapitalization.sentences,
-                          onSubmitted: (_) => _addManual(d),
-                          decoration: const InputDecoration(
-                            hintText: 'Tambah item, mis. tisu muka',
-                            isDense: true,
-                            fillColor: Color(0xFFF9FAF8),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      SquareIconButton(icon: Icons.add_rounded, tooltip: 'Tambah item', onPressed: () => _addManual(d)),
-                    ],
-                  ),
-                ),
-              ]),
+              ..._byStore(visible, d),
               const SizedBox(height: 8),
               const Text('Ketuk item untuk pindah toko · geser ke kiri untuk menghapus.',
                   textAlign: TextAlign.center, style: mutedText),
@@ -192,8 +151,8 @@ class _ShoppingScreenState extends State<ShoppingScreen> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
           child: FilledButton.icon(
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => ShoppingModeScreen(weekId: d.weekId))),
+            onPressed: () =>
+                Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingModeScreen(weekId: d.weekId))),
             icon: const Icon(Icons.checklist_rounded),
             label: Text('Mulai belanja, ${items.length} item'),
           ),
@@ -225,6 +184,57 @@ class _StoreHeader extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text('$count item', style: mutedText),
+        ],
+      ),
+    );
+  }
+}
+
+/// Baris tambah item di bawah setiap grup toko.
+class _AddRow extends StatefulWidget {
+  const _AddRow({super.key, required this.onAdd});
+  final Future<void> Function(String name) onAdd;
+
+  @override
+  State<_AddRow> createState() => _AddRowState();
+}
+
+class _AddRowState extends State<_AddRow> {
+  final _c = TextEditingController();
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final name = _c.text.trim();
+    if (name.isEmpty) return;
+    _c.clear();
+    await widget.onAdd(name);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _c,
+              textCapitalization: TextCapitalization.sentences,
+              onSubmitted: (_) => _submit(),
+              decoration: const InputDecoration(
+                hintText: 'Tambah item, mis. tisu muka',
+                isDense: true,
+                fillColor: Color(0xFFF9FAF8),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          SquareIconButton(icon: Icons.add_rounded, tooltip: 'Tambah item', onPressed: _submit),
         ],
       ),
     );
@@ -370,8 +380,7 @@ class _ShopRow extends StatelessWidget {
                         InkWell(
                           borderRadius: BR.pillR,
                           onTap: () => _toggleBuyMode(context),
-                          child: Tag(item.grosir ? 'Grosir' : 'Eceran',
-                              item.grosir ? TagKind.grosir : TagKind.eceran),
+                          child: Tag(item.grosir ? 'Grosir' : 'Eceran', item.grosir ? TagKind.grosir : TagKind.eceran),
                         ),
                         if (sub.isNotEmpty) ...[
                           const SizedBox(width: 7),
