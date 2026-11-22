@@ -12,6 +12,12 @@ dan proyek ini memakai [Semantic Versioning](https://semver.org/lang/id/).
 - Bundel font Fredoka dan Plus Jakarta Sans sebagai asset agar offline sejak instalasi pertama.
 - Keystore rilis sendiri; `flutter build apk --release` saat ini masih ditandatangani kunci debug bawaan template.
 
+## [1.2.0] - 2026-11-22
+
+### Diubah
+- **Harga di Mode Belanja langsung masuk Total belanja**, tanpa harus mencentang item dulu. Centang tetap dipakai untuk progres "x dari y item diambil". Perhitungan yang sama dipakai di layar "Belanja beres!", Riwayat per minggu, dan pengeluaran bulanan di Beranda, supaya angkanya tidak berbeda antarlayar.
+- **Item tambahan langsung masuk ke section tokonya.** Section "Tambahan" yang terpisah dihapus; setiap toko (Super Indo, Pasar, dst.) kini punya baris "Tambah item" sendiri, dan item tambahan duduk bersama bahan dari menu di toko itu. Semua toko selalu tampil walau belum ada itemnya, jadi item bisa ditambahkan ke toko mana pun. Section "Belum ada toko" hanya muncul bila ada item tanpa toko.
+
 ## [1.1.0] - 2026-10-11
 
 ### Ditambahkan
